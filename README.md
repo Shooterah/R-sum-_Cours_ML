@@ -1116,7 +1116,48 @@ Nous déduisons la solution optimale : w₁ = 0, w₂ = 1, b = -1.
 Équation de l'hyperplan optimal : x₂ = 1
 
 
+### Kernel Perceptron :
 
+On appelle noyau (kernel) toute fonction k : X × X → R qui peut être interprétée comme un produit scalaire dans un plongement Φ :
+- k(x, x') = ⟨Φ(x), Φ(x')⟩
+  
+On peut appliquer le perceptron et les SVM en remplaçant ⟨xᵢ, xⱼ⟩ par k(xᵢ, xⱼ).
+
+#### Kernel trick :
+On obtient alors un classificateur
+- f : x ↦ sign(Σᵢ=₁ⁿ αᵢyᵢk(x, xᵢ))
+
+linéaire dans l'espace de plongement (avec toutes les garanties associées) et non linéaire dans l'espace initial sans avoir à effectuer le plongement !
+
+#### Algorithme du perceptron à noyau :
+
+**Entrée :** S = {(x₁, y₁), ..., (xₙ, yₙ)}, un échantillon complet linéairement séparable
+
+```math
+α = → 0 ∈ Rₙ
+Répéter
+  Pour i = 1 à n
+    Si yᵢ(Σⱼ=₁ⁿ αⱼyⱼk(xⱼ, xᵢ)) ≤ 0 alors
+      αᵢ = αᵢ + 1
+    FinSi
+  FinPour
+Jusqu'à ce qu'il n'y ait plus d'erreurs
+```
+
+**Sortie :** x ↦ sign(Σᵢ αᵢyᵢk(x, xᵢ))
+
+**Expliquation :**
+L'algorithme du perceptron à noyau est une extension du perceptron classique, qui permet d'apprendre des frontières de décision non linéaires. Pour cela, il utilise une fonction de noyau (kernel) qui transforme les données d'entrée dans un nouvel espace de caractéristiques où elles sont linéairement séparables. Voici les étapes de l'algorithme :
+
+1. Initialisation : On initialise un vecteur de poids α de taille n avec des zéros. n est le nombre d'exemples dans l'ensemble d'apprentissage S.
+
+2. Entraînement : On parcourt l'ensemble d'apprentissage S de manière itérative. Pour chaque exemple (xᵢ, yᵢ), on calcule la somme pondérée des noyaux entre xᵢ et tous les autres exemples xⱼ, multipliée par les poids αⱼ et les étiquettes yⱼ. Si le produit de yᵢ et de cette somme est inférieur ou égal à 0, cela signifie que la classification de l'exemple xᵢ est incorrecte. Dans ce cas, on met à jour le poids αᵢ en l'incrémentant de 1.
+
+3. Répétition : On répète l'étape 2 jusqu'à ce qu'il n'y ait plus d'erreurs de classification dans l'ensemble d'apprentissage.
+
+4. Prédiction : Une fois l'entraînement terminé, on obtient un classificateur non linéaire f(x) = sign(Σᵢ=₁ⁿ αᵢyᵢk(x, xᵢ)). Pour prédire l'étiquette d'un nouvel exemple x, on calcule la somme pondérée des noyaux entre x et tous les exemples d'apprentissage xᵢ, multipliée par les poids αᵢ et les étiquettes yᵢ. Enfin, on prend le signe de cette somme pour obtenir la prédiction finale.
+
+L'idée clé de cet algorithme est l'utilisation d'une fonction de noyau qui permet de transformer les données d'entrée dans un nouvel espace où elles sont linéairement séparables. Le perceptron à noyau apprend alors une frontière de décision linéaire dans cet espace de caractéristiques transformé, mais cette frontière est non linéaire dans l'espace d'entrée initial.
 
 
 ```
