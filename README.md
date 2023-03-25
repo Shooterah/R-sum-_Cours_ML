@@ -1133,7 +1133,7 @@ linéaire dans l'espace de plongement (avec toutes les garanties associées) et 
 
 **Entrée :** S = {(x₁, y₁), ..., (xₙ, yₙ)}, un échantillon complet linéairement séparable
 
-```math
+```
 α = → 0 ∈ Rₙ
 Répéter
   Pour i = 1 à n
