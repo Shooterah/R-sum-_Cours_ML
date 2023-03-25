@@ -696,3 +696,437 @@ En résumé, l'algorithme du Random Forest consiste à créer plusieurs ensemble
 
 ![DT Entropy](images/RF_exemple.png)
 ![DT Entropy](images/RF_exemple_2.png)
+
+
+# Perceptron and Support Vector Machines (SVM)
+
+## Perceptron
+
+### Définition :
+
+Le perceptron est un algorithme simple d'apprentissage supervisé pour la classification binaire, c'est-à-dire pour classer des données en deux catégories. Il s'agit d'un modèle de base dans le domaine de l'apprentissage automatique et des réseaux de neurones.
+
+Imagine que tu as des points sur une feuille de papier, et que chaque point appartient à l'une des deux catégories (par exemple, des points rouges et des points bleus). Le but du perceptron est de trouver une ligne droite (ou une frontière de décision) qui sépare le mieux possible les points rouges des points bleus.
+
+Un perceptron est constitué d'un neurone unique qui prend en entrée plusieurs caractéristiques ou attributs (aussi appelés "features") d'un exemple et produit une sortie binaire. Chaque caractéristique est associée à un poids, qui représente l'importance de cette caractéristique pour la décision finale. Le neurone combine les caractéristiques et leurs poids respectifs, puis utilise une fonction d'activation (souvent une fonction seuil) pour produire la sortie binaire.
+
+Le perceptron apprend à partir d'exemples d'apprentissage en ajustant les poids des caractéristiques. L'objectif est de trouver les poids qui permettent de classer correctement les exemples d'apprentissage. Une fois que les poids sont déterminés, le perceptron peut être utilisé pour classifier de nouveaux exemples en entrée.
+
+### Linear binary classififcation
+
+La méthode de classification la plus simple et pourtant la plus efficace !
+
+#### Données
+Des vecteurs de valeurs numériques de dimension d (X ⊂ R^d) avec en plus l'information à apprendre (classification supervisée) composée de 2 classes (classification binaire) (Y = {-1, +1}).
+
+#### Classificateur linéaire
+Un classificateur linéaire (ou un perceptron) est une fonction de la forme :
+f(x) = { +1 si <w, x> + b ≥ 0; -1 sinon. }
+où :
+- w = (w1, ..., wd) est un vecteur (math : w ∈ R^d),
+- b est un nombre réel (math : b ∈ R)
+- la notation <w, x> représente le produit scalaire entre w et x :
+- si w = (w1, ..., wd) et x = (x1, ..., xd), 
+  alors <w, x> = somme(wixi pour i=1 à d) = x1w1 + x2w2 + ... + xdwd
+
+#### Interprétation géométrique
+<w, x> + b = 0 est l'équation d'un hyperplan qui sépare X en deux demi-espaces correspondant aux deux classes.
+
+Si d = 2, nous trouvons l'équation d'une ligne : <w, x> + b = w1x1 + w2x2 + b = 0 donne x2 = -(w1/w2) * x1 - (b/w2) (similaire à y = ax + b de vos cours de lycée...).
+
+Prenons w = (1, 2) et b = -1 :
+
+f(x) = f(x1, x2) = { 1 si x1 + 2*x2 - 1 ≥ 0; -1 sinon }
+
+Par exemple, f(0, 0) = -1 et f(1, 1) = 1 : 
+
+![Perceptron](images/Perceptron_1.png)
+
+
+### Linearly separable data
+
+Un échantillon (en math : S = {(x1, y1), ..., (xn, yn) ⊂ (X × Y)^n}) est linéairement séparable s'il existe un classificateur linéaire qui classe correctement tous les exemples de S.
+
+#### Lemme (séparabilité stricte)
+
+S'il existe un classificateur qui classe parfaitement les données d'apprentissage, alors il existe un classificateur qui classe ces données sans qu'aucune d'entre elles ne se trouve sur la frontière de décision, b + <w, x> ≠ 0.
+
+#### Exemple
+
+S = {((0, 0), -1), ((1, 0), 1), ((0, 1), -1)} est linéairement séparable.
+S = {((0, 0), -1), ((1, 0), 1), ((0, 1), 1), ((1, 1), -1)} n'est pas linéairement séparable (XOR).
+
+**Explication :**
+
+1. Dans le premier exemple, S = {((0, 0), -1), ((1, 0), 1), ((0, 1), -1)}, nous avons trois points avec deux classes différentes (-1 et 1). Si nous traçons ces points sur un graphique, nous pouvons clairement dessiner une ligne (un classificateur linéaire) qui sépare les points de la classe -1 des points de la classe 1.
+
+2. Dans le deuxième exemple, S = {((0, 0), -1), ((1, 0), 1), ((0, 1), 1), ((1, 1), -1)}, nous avons quatre points avec deux classes différentes (-1 et 1). Si nous traçons ces points sur un graphique, nous ne pouvons pas dessiner une seule ligne (un classificateur linéaire) qui sépare les points de la classe -1 des points de la classe 1. Cette configuration de points est un exemple classique du problème XOR, qui n'est pas linéairement séparable.
+
+
+### Calcul Perceptron
+
+Un perceptron avec un vecteur de poids w et un biais b effectue le calcul suivant :
+(x1, ..., xd) 7→ y = sgn(b + ∑d_i=1(wixi)) = sgn(b + <w, x>)
+avec :
+- sgn(z) = { +1 si z ≥ 0, -1 si z < 0 }
+
+**Remarques :**
+Les isométries et les homothéties préservent la séparabilité. En d'autres termes, si les données sont linéairement séparables, elles le resteront après une transformation isométrique (rotation, réflexion) ou homothétique (mise à l'échelle).
+
+Il existe une infinité d'hyperplans séparant les données séparables. Cela signifie que, lorsqu'un ensemble de données est linéairement séparable, il y a de nombreuses façons de tracer un hyperplan qui sépare les classes. Chaque hyperplan correspond à un ensemble différent de poids et de biais pour le perceptron.
+
+**Geometrical interpretation**
+
+- données x = (x1, ..., xd) : les données sont représentées sous forme de vecteurs x, qui appartiennent à un espace de dimension d.
+- points vérifiant b + <w, x> = 0 : ces points appartiennent à l'hyperplan défini par le biais b et le vecteur de poids w.
+- points vérifiant b + <w, x> > 0 : ces points se situent d'un côté de l'hyperplan.
+- points vérifiant b + <w, x> < 0 : ces points se trouvent de l'autre côté de l'hyperplan.
+
+Un perceptron divise l'espace de données en deux demi-espaces situés de part et d'autre de l'hyperplan. L'objectif est de séparer les classes d'exemples en plaçant une classe d'un côté de l'hyperplan et l'autre classe de l'autre côté. Ainsi, lorsque de nouvelles données sont présentées au perceptron, il peut déterminer à quelle classe elles appartiennent en fonction de leur position par rapport à l'hyperplan.
+
+![Perceptron](images/Perceptron_2.png)
+
+### 1st learning algorithm : 
+
+#### Data
+Un ensemble de données S = {(x1, y1), ... ,(xn, yn)}, avec pour tout i, xi = (xi1, xi2, ... , xid) ∈ R^d et yi ∈ {-1, +1}. Si yi = +1, on dit que xi est un exemple positif. Inversement, si yi = -1, on dit que xi est un exemple négatif.
+
+#### Task
+Générer un perceptron qui renvoie 1 pour tous les exemples positifs et -1 pour les exemples négatifs.
+
+#### Choses a savoir :
+Évidemment, il existe des cas où l'algorithme d'apprentissage du perceptron n'est pas capable de résoudre le problème de classification :
+- exemple : (xi, +1) ∈ S et (xj, -1) ∈ S avec xi = xj
+- données non linéairement séparables
+
+→ Il existe des solutions pour gérer cela (par exemple, les SVM avec noyaux et les réseaux de neurones).
+
+#### Les erreurs :
+
+**Sur un exemple positif :**
+Erreur de classification de (→x, +1) ∈ S
+
+→ b + ⟨→w, →x⟩ < 0
+
+Comment modifier b et →w pour éliminer cette erreur ?
+→ augmenter b + ⟨→w, →x⟩
+- augmenter b
+- Si xi > 0, augmenter wi
+- Si xi < 0, diminuer wi
+
+Algorithme : ajouter →x à →w et 1 à b
+
+Pour corriger l'erreur de classification d'un exemple positif, il faut augmenter la valeur de b + ⟨→w, →x⟩. Pour ce faire, on peut augmenter b et ajuster les poids wi en fonction de la valeur de xi : si xi est positif, on augmente wi ; si xi est négatif, on diminue wi. L'algorithme consiste alors à ajouter →x à →w et 1 à b.
+
+**Sur un exemple négatif :**
+Procéder de manière analogue pour les exemples négatifs (→x, -1)
+
+Pour corriger l'erreur de classification d'un exemple négatif, on procède de manière similaire, mais en ajustant les poids et le biais dans la direction opposée. Ainsi, on cherche à réduire la valeur de b + ⟨→w, →x⟩ en diminuant b et en ajustant les poids wi de manière opposée à celle utilisée pour les exemples positifs.
+
+
+#### L'algorithme :
+
+**Entrée :** S = {(x1, y1), ..., (xn, yn)}, un échantillon R^d × {−1, +1} linéairement séparable
+```
+w = →0 ∈ Rd, b = 0
+Répéter
+  Pour i = 1 à n
+    Si ⟨w, xi⟩ + b < 0 et yi = +1 alors
+      w = w + xi
+      b = b + 1
+    Si ⟨w, xi⟩ + b ≥ 0 et yi = -1 alors
+      w = w - xi
+      b = b - 1
+  FinPour
+Jusqu'à ce qu'il n'y ait plus d'erreurs
+```
+
+**Sortie :** (w, b)
+
+**Expliquation :**
+1. Initialisation : On commence par initialiser le vecteur de poids w à zéro (→0) et le biais b à 0.
+
+2. Répétition : On répète les étapes suivantes jusqu'à ce qu'il n'y ait plus d'erreurs de classification.
+
+3. Pour chaque exemple (xi, yi) dans l'échantillon S, on vérifie si la classification est correcte ou non.
+
+- Si la classification est incorrecte et que yi = +1 (exemple positif mal classé), on met à jour le vecteur de poids w et le biais b comme suit :
+  - w = w + xi (ajouter le vecteur xi au vecteur w)
+  - b = b + 1 (incrémenter le biais de 1)
+
+- Si la classification est incorrecte et que yi = -1 (exemple négatif mal classé), on met à jour le vecteur de poids w et le biais b comme suit :
+  - w = w - xi (soustraire le vecteur xi du vecteur w)
+  - b = b - 1 (décrémenter le biais de 1)
+
+4. L'algorithme se termine lorsque tous les exemples sont correctement classés. La sortie est le vecteur de poids w et le biais b qui définissent le perceptron.
+
+Cet algorithme fonctionne uniquement pour des échantillons linéairement séparables. Si les données ne sont pas linéairement séparables, l'algorithme ne convergera pas vers une solution.
+
+
+### 2nd learning algorithm (completed data) :
+
+Pour simplifier les calculs, on utilise souvent (toujours !) une astuce mathématique pour éviter de traîner le scalaire b tout le temps.
+
+#### Idée :
+Ajouter une dimension : si nos données sont de dimension d, donc dans Rd, nous ferons comme si elles étaient dans Rd+1 et qu'elles avaient toutes 1 en dernière coordonnée. Ainsi, nous considérons que w est également de dimension d+1 et la dernière coordonnée de w est b.
+
+#### Mathématiquement :
+f(x) = signe(b + <w, x>) = sgn(b + Σ_(i=1..d wixi))
+
+= sgn(b · 1 + Σ_(i=1..d wixi))
+
+= sgn(Σ_(i=1..d+1) wixi) avec wd+1 = b et xd+1 = 1
+
+= sgn(<(w1, ..., wd, b), (x1, ..., xd, 1)>)
+
+On dit que les données sont complétées si elles sont dans Rd+1.
+
+Soit S ⊂ Rd+1 × {−1, +1} un échantillon linéairement séparable.
+
+Soit w le classificateur linéaire actuel.
+
+- Si (x, +1) ∈ S est mal classé, ⟨w, x⟩ < 0 et il faut augmenter ⟨w, x⟩.
+
+- Si (x, -1) ∈ S est mal classé, ⟨w, x⟩ ≥ 0 et il faut diminuer ⟨w, x⟩.
+
+#### Ébauche :
+Soit w_new = w + x · y
+
+Pour y = +1, nous avons
+
+⟨w_new, x⟩ = ⟨w + x · (+1), x⟩ = ⟨w, x⟩ + ⟨x, x⟩ = ⟨w, x⟩ + ||x||^2
+
+Pour y = -1, nous avons
+
+⟨w_new, x⟩ = ⟨w + x · (-1), x⟩ = ⟨w, x⟩ - ⟨x, x⟩ = ⟨w, x⟩ - ||x||^2
+
+#### Algorithme :
+
+**Entrée :** S = {(x₁, y₁), ..., (xₙ, yₙ)}, un échantillon R^d+1 × {−1, +1} complété et linéairement séparable
+```
+w = −→0 ∈ Rd+1
+Répéter
+  Pour i = 1 à n
+    Si yᵢ⟨w, xᵢ⟩ ≤ 0 alors
+      w = w + yᵢxᵢ
+  FinPour
+Jusqu'à ce qu'il n'y ait plus d'erreur
+```
+
+**Sortie :** w
+
+Cet algorithme d'apprentissage du perceptron prend en entrée un ensemble de données complété (S) et linéairement séparable. Le vecteur des poids w est initialisé à zéro dans Rd+1.
+
+L'algorithme répète ensuite les étapes suivantes jusqu'à ce qu'il n'y ait plus d'erreurs de classification :
+
+1. Parcourir les données de 1 à n.
+2. Pour chaque donnée (xᵢ, yᵢ), vérifier si yᵢ⟨w, xᵢ⟩ ≤ 0.
+3. Si la condition est vraie, mettre à jour le vecteur des poids : w = w + yᵢxᵢ.
+
+
+Une fois que l'algorithme ne détecte plus d'erreurs de classification, il renvoie le vecteur des poids w comme sortie. Cet algorithme apprend les poids et le biais du perceptron de manière à bien classer les données d'entrée linéairement séparables.
+
+### 3rd learning algorithm (Dual form):
+
+#### Remarque :
+
+L'hypothèse finale (= la sortie w) est une combinaison linéaire des exemples d'apprentissage.
+- w = Σ(αᵢyᵢxᵢ) pour i = 1 à n
+Les nombres αᵢ sont positifs ou nuls, et sont égaux au nombre de fois qu'une mauvaise classification de xᵢ a provoqué une mise à jour du perceptron. Ils peuvent être considérés comme une représentation duale de la solution :
+- f(x) = sgn(⟨w, x⟩) = sgn(⟨Σ(αᵢyᵢxᵢ), x⟩) = sgn(Σ(αᵢyᵢ⟨xᵢ, x⟩)).
+
+#### Algorithme :
+
+**Entrée :** S = {(x₁, y₁), ..., (xₙ, yₙ)}, un échantillon complété et linéairement séparable
+
+```
+α = −→0 ∈ Rₙ
+Répéter
+  Pour i = 1 à n
+    Si yᵢ(Σ(αⱼyⱼ⟨xⱼ, xᵢ⟩)) ≤ 0 alors
+      αᵢ = αᵢ + 1
+    FinSi
+  FinPour
+Jusqu'à ce qu'il n'y ait plus d'erreur
+```
+
+**Sortie :** α
+
+Cet algorithme prend en entrée un échantillon complété et linéairement séparable (S) et initialise le vecteur α à zéro.
+
+L'algorithme répète ensuite les étapes suivantes jusqu'à ce qu'il n'y ait plus d'erreurs de classification :
+
+1. Parcourir les données de 1 à n.
+2. Pour chaque donnée (xᵢ, yᵢ), vérifier si yᵢ(Σ(αⱼyⱼ⟨xⱼ, xᵢ⟩)) ≤ 0.
+3. Si la condition est vraie, mettre à jour le vecteur α : αᵢ = αᵢ + 1.
+
+Une fois que l'algorithme ne détecte plus d'erreurs de classification, il renvoie le vecteur α comme sortie. Cette forme duale de l'algorithme du perceptron apprend une représentation alternative de la solution, basée sur les coefficients α plutôt que sur les poids w.
+
+
+## Support Vector Machine (SVM) :
+
+### The notion of margin :
+
+La distance entre un point M ∈ R^d et un hyperplan h défini par le vecteur w et le scalaire b tels que ⟨w, x⟩ + b = 0 est donnée par :
+- d(M, h) = |⟨w, M⟩ + b| / ||w||
+
+Dans ce cas, la distance d'un exemple (x, y) à un hyperplan séparateur est égale à :
+- y(⟨w, x⟩ + b) / ||w||
+
+En termes simples, la notion de marge fait référence à la distance entre un point (ou un exemple) et un hyperplan séparateur. L'hyperplan séparateur est défini par un vecteur w et un scalaire b, et la distance d'un exemple (x, y) à cet hyperplan est calculée en utilisant la formule mentionnée ci-dessus.
+
+La marge est un concept important dans l'apprentissage supervisé, en particulier pour les algorithmes de classification tels que les machines à vecteurs de support (SVM). L'idée principale est de maximiser la marge, c'est-à-dire de trouver l'hyperplan séparateur qui maximise la distance minimale entre les points et l'hyperplan. Cela permet d'obtenir une meilleure généralisation et une meilleure performance de classification.
+
+
+### Théorème de Novikoff :
+
+Soit S = {(x₁, y₁), ..., (xₙ, yₙ)} un échantillon d'apprentissage. 
+
+Supposons que ∀i, ||xᵢ|| ≤ 1 et ∃w, γ > 0 tel que ∀i, yᵢ(⟨w, xᵢ⟩) ≥ γ. 
+
+Alors le nombre d'erreurs (yᵢ(⟨wₖ, xᵢ⟩) ≤ 0) commises pendant l'exécution de l'algorithme est au plus égal à (2/γ)².
+
+#### Remarques :
+
+γ est une borne inférieure de la marge du problème.
+
+Quelles que soient les données, on peut toujours les réduire, grâce à une dilatation-translation, au cas où Max||xᵢ|| = 1.
+
+Le théorème de Novikoff nous donne une estimation du nombre maximal d'erreurs commises par l'algorithme du perceptron lors de l'apprentissage, en fonction de la marge du problème (γ). 
+
+Il nous assure que si la marge est grande, l'algorithme commettra moins d'erreurs, ce qui signifie une meilleure performance de classification. 
+
+Ce théorème est important pour comprendre la convergence et la performance de l'algorithme du perceptron dans le cas des données linéairement séparables.
+
+#### Exemple :
+
+Prenons l'exemple suivant :
+
+S = {((0, 0), -1), ((0, 1), 1), ((1, 0), 1), ((1, 1), 1)}.
+
+En effectuant une translation vectorielle de (-1/2, -1/2) suivie d'une dilatation de rapport √2, nous obtenons l'échantillon équivalent :
+
+S = {((-√2/2, -√2/2), -1), ((-√2/2, √2/2), 1), ((√2/2, -√2/2), 1), ((√2/2, √2/2), 1)}.
+
+Nous avons Max||xᵢ|| = 1. Nous vérifions que la marge du problème est égale à 1/2.
+
+Le théorème prédit que le nombre de corrections de l'algorithme est inférieur ou égal à 16.
+
+Dans cet exemple, nous avons d'abord transformé l'échantillon original en appliquant une translation et une dilatation. Ensuite, nous avons calculé la marge du problème, qui est de 1/2. Enfin, en utilisant le théorème de Novikoff, nous avons déterminé que le nombre maximal de corrections apportées par l'algorithme du perceptron est de 16. Cela signifie que, dans ce cas particulier, l'algorithme du perceptron devrait converger en 16 étapes ou moins, en supposant que les données soient linéairement séparables.
+
+### Margin Calculation :
+
+Soit S un échantillon linéairement séparable et soit h un hyperplan séparateur, avec l'équation ⟨w, x⟩ + b = 0.
+Nous pouvons modifier linéairement w et b de telle sorte que le point M le plus proche de h satisfasse :
+- f(xₘ) = ⟨w, xₘ⟩ + b = { 1 si M est positif; -1 sinon }
+
+Dans ce cas : 
+
+La marge de h est égale à 1/||w|| et
+tous les points de S vérifient yf(x) ≥ 1.
+
+Prenons l'exemple suivant :
+
+Soit S = {((0, 1), +), ((2, 0), -)}.
+
+La ligne d'équation f(x1, x2) = -x1 + x2 - 1/2 = 0 sépare S.
+
+Nous avons f(0, 1) = 1/2 et f(2, 0) = -5/2.
+
+Nous normalisons l'équation en la multipliant par 2 : -2x1 + 2x2 - 1 = 0.
+
+- w = (-2, 2), ||w|| = √8 = 2√2
+
+et la marge est égale à 1/(2√2) = √2/4.
+
+Dans cet exemple, nous avons un échantillon linéairement séparable S et un hyperplan séparateur h. Nous avons normalisé l'équation de l'hyperplan pour que le point le plus proche de h vérifie f(xₘ) = 1 ou -1. Ensuite, nous avons calculé la marge de l'hyperplan, qui est égale à 1/||w||. Dans cet exemple particulier, la marge est égale à √2/4.
+
+
+### Optimal Linear Separators :
+
+Soit S = {(x₁, y₁), ..., (xₙ, yₙ)}, xᵢ ∈ Rᵈ⁺¹ et yᵢ ∈ {-1, +1} un échantillon linéairement séparable.
+
+Parmi l'infinité de séparateurs linéaires, nous cherchons celui qui maximise la marge.
+
+La marge d'un séparateur défini par un vecteur w étant 1/||w||, nous cherchons le w tel que ||w|| soit minimal (et qui sépare correctement les données).
+
+#### Perceptron à large marge :
+
+Le perceptron à large marge est formulé par le problème d'optimisation quadratique convexe suivant :
+- Minimiser ||w||²
+
+sous les contraintes :
+
+- yᵢ⟨w, xᵢ⟩ ≥ 1 pour tout i = 1 ... n
+
+#### Exemple :
+
+Soit S = {((0, 0), -1), ((0, 1), 1), ((1, 0), 1), ((1, 1), 1)}. Nous avons :
+
+S_complet = {((0, 0, 1), -1), ((0, 1, 1), 1), ((1, 0, 1), 1), ((1, 1, 1), 1)}.
+
+Le problème consiste donc à trouver w = (w₁, w₂, b) tel que :
+- Minimiser w₁² + w₂² + b²
+
+sous les contraintes :
+
+- -b ≥ 1, w₂ + b ≥ 1, w₁ + b ≥ 1, w₁ + w₂ + b ≥ 1
+
+La seule solution est w₁ = w₂ = 2 et b = -1.
+
+Dans cet exemple, nous cherchons le séparateur linéaire optimal pour un échantillon linéairement séparable S. Nous formulons le problème comme un problème d'optimisation quadratique convexe, où nous cherchons à minimiser ||w||² tout en respectant les contraintes imposées par les données. La solution trouvée dans cet exemple est w₁ = w₂ = 2 et b = -1, ce qui correspond au séparateur linéaire optimal pour cet échantillon.
+
+
+### Optimal hyperplanes :
+
+Soit S = {(x₁, y₁), ..., (xₙ, yₙ)} ⊂ Rᵈ × {-1, +1} un échantillon linéairement séparable.
+
+#### SVM : Séparateur à Vaste Marge - Machines à Vecteurs de Support
+
+Il existe un unique hyperplan séparateur de marge maximale qui est la solution du problème d'optimisation suivant :
+
+```math
+{
+  f(x) = ⟨w, x⟩ + b,
+  yᵢf(xᵢ) ≥ 1 pour tout i = 1 ... n,
+  Minimiser ||w||²
+}
+```
+
+Optimisation quadratique sous contraintes linéaires (convexe) :
+
+![SVM](images/SVM_1.png)
+
+#### Exemple :
+
+Soit S = {((4, 3), 1), ((0, 2), 1), ((0, 0), -1)}.
+
+Le problème d'optimisation à résoudre est :
+
+- Minimiser w₁² + w₂² + b²
+
+sous les contraintes :
+
+- 4w₁ + 3w₂ + b ≥ 1, 2w₂ + b ≥ 1, -b ≥ 1.
+
+Les deux dernières équations impliquent w₂ ≥ 1 et donc w₁² + w₂² ≥ 1.
+
+Nous déduisons la solution optimale : w₁ = 0, w₂ = 1, b = -1.
+
+Équation de l'hyperplan optimal : x₂ = 1
+
+
+
+
+
+```
+LE RESTE DU SVM EST CHIANT DONC JE SKIP :)
+```
+
+
+# HMM - Hidden Markov Models :
+
+
+
+
+
